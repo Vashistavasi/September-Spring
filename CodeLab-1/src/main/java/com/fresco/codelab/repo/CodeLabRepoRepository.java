@@ -13,12 +13,16 @@ import com.fresco.codelab.model.CodeLabUser;
 public interface CodeLabRepoRepository  extends JpaRepository<CodeLabRepo, Long>{
 
   CodeLabRepo findByrepoName(String s);
-  CodeLabRepo findByrepoAutoGenIdAndRepoOwnerId(long l, long m);
+  CodeLabRepo findByRepoAutoGenIdAndRepoOwnerId(long l, long m);
   CodeLabRepo findByrepoAutoGenId(long l);
-  CodeLabRepo findByrepoAutoGenIdAndRepoOwnerId(Long repoId, Long userId);
+
  List< CodeLabRepo> findByrepoOwnerId(Long repoId);
  @Query("select c from CodeLabRepo c")
   List<CodeLabRepo> findallList();
-  
-  
+// @Query("SELECT c.id_user from code_labuser c where c.id_repo=?1")
+//List<Long> findRepoDevelopers(long id_repo);
+//List<CodeLabUser> findRepoDevelopers();
+// @Query("select c from CodeLabRepo c,code_labuser t where t.id_repo=?1")
+// List<CodeLabRepo> fromtable(long Id);
+  List<CodeLabRepo> findAllByRepoDevelopers(CodeLabUser user);
 }

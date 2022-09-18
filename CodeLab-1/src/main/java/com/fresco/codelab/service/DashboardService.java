@@ -40,6 +40,7 @@ public class DashboardService {
 		//CodeLabUser user=emUser.findByuserAutoGenId(userId);
 		System.err.println(" the user id is "+ userId);
 		List<CodeLabRepo> ans=emRepo.findByrepoOwnerId(userId);
+		
 		System.out.println(emRepo.findallList());
 		System.out.println(ans);
 		return ans;
@@ -49,39 +50,54 @@ public class DashboardService {
 	}
 
 	public CodeLabRepo getRepoWithRepoIdAndOwnerId(Long repoId, Long userId) {
-    return emRepo.findByrepoAutoGenIdAndRepoOwnerId(repoId,userId);
+    return emRepo.findByRepoAutoGenIdAndRepoOwnerId(repoId,userId);
 		
 	}
 	
 	public void addRepoToUserName(CodeLabRepo repo, String username, Long ownerId) {
-  CodeLabRepo c=emRepo.findByrepoAutoGenIdAndRepoOwnerId(repo.getRepoAutoGenId(),ownerId);
-  List<CodeLabUser> a=c.getRepoDevelopers();
+   
   
-  Optional<CodeLabUser> u=Optional.ofNullable(emUser.findByUsername(username));
-  if(!u.isEmpty()) {
-  a.add(u.get());
-  c.setRepoDevelopers(a);
-  emRepo.save(c);
-  System.err.println("Executed Method 5 void add");
-  }
+    List<CodeLabUser> developers=emUser.findAllByRepos(repo);
+    developers.add(emUser.findByUsername(username));
+    repo.setRepoDevelopers(developers);
+    emRepo.save(repo);
+//  Optional<CodeLabUser> u=Optional.ofNullable(emUser.findByUsername(username));
+//   if(u.isPresent())
+//   {
+//	   CodeLabUser user=u.get();
+//	   
+//	   List<CodeLabRepo> l=emRepo.findByrepoOwnerId(user.getUserAutoGenId());
+//	   l.add(repo);
+//	   user.setRepos(l);
+//	   emUser.save(user);
+////	   List<CodeLabUser> us=emUser.findByuserAutoGenId(user.getUserAutoGenId());
+//	   
+//   }
   }
 	
 	public Set<CodeLabRepo> getUserDeveloperRepos(Long userId) {
-    CodeLabUser c=emUser.findByuserAutoGenId(userId);
-  List<CodeLabRepo> a=c.getRepos();
-  Set<CodeLabRepo> s=new HashSet<CodeLabRepo>();
-  for(CodeLabRepo i: a)
-  s.add(i);
+		 CodeLabUser user=emUser.findByuserAutoGenId(userId);
+		  Set<CodeLabRepo> s=new HashSet<CodeLabRepo>();
+		List<CodeLabRepo> repos=emRepo.findAllByRepoDevelopers(user);
+		for(CodeLabRepo c:repos)
+			s.add(c);
+		
   return s;
 	}
 
 	public CodeLabRepo getRepoWithRepoIdAndDeveloperId(Long repoId, Long userId) {
-    CodeLabRepo c=emRepo.findByrepoAutoGenIdAndRepoOwnerId(repoId,userId);
-    return c;
+		CodeLabRepo c= emRepo.findByrepoAutoGenId(repoId);
+		CodeLabUser user=emUser.findByuserAutoGenId(userId);
+		List<CodeLabUser> developers =emUser.findAllByRepos(c);
+		for(int i=0;i<developers.size();i++) {
+			if(developers.get(i).getUserAutoGenId()==userId)
+				return c;
+		}
+			return null;
 	}
 
 	public Integer uploadCode(Long userId, Long repoId) {
-     Optional<CodeLabRepo> curr=Optional.ofNullable(emRepo.findByrepoAutoGenIdAndRepoOwnerId(repoId, userId));
+     Optional<CodeLabRepo> curr=Optional.ofNullable(emRepo.findByRepoAutoGenIdAndRepoOwnerId(repoId, userId));
      int ans=0;
      if(!curr.isEmpty()) {
     	 CodeLabRepoVersion cv=new CodeLabRepoVersion();
