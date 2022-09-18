@@ -15,10 +15,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.fresco.codelab.repo.CodeLabRepoRepository;
-import com.fresco.codelab.repo.CodeLabUserRepository;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 
 
@@ -74,6 +72,7 @@ public class CodeLabRepo {
 
  
   @ManyToMany(targetEntity = CodeLabUser.class, cascade = { CascadeType.ALL })
+  @LazyCollection(LazyCollectionOption.FALSE)
   @JoinTable(name="code_labuser",joinColumns={@JoinColumn(name="id_repo")},
   inverseJoinColumns={@JoinColumn(name="id_user")}) 
   public List<CodeLabUser> getRepoDevelopers(){ if (repoDevelopers == null) {
